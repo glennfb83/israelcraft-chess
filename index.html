@@ -25,6 +25,9 @@
       --mode-toggle-min: 96px;
       --map-shadow-color: rgba(53,111,186,0.35);
       --map-bg: #070b12;
+
+      --light-square: #f3e9d5;
+      --dark-square: #b58863;
     }
 
     /* Global / base rules */
@@ -45,18 +48,6 @@
       position:relative;
     }
 
-    /* subtle SVG noise overlay as pseudo-element */
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:0.12;
-      mix-blend-mode:multiply;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.6' fill='%23ffffff'/></svg>");
-      background-repeat:repeat;
-    }
-
     /* Central wrap */
     .wrap{
       width: min(var(--max-width), calc(100% - (var(--side-pad) * 2)));
@@ -75,9 +66,6 @@
 
     /* Grid utilities */
     .grid{ display:grid; gap:18px; }
-    .grid.two{ grid-template-columns: repeat(2, 1fr); }
-    .grid.three{ grid-template-columns: repeat(3, 1fr); }
-    .grid.four{ grid-template-columns: repeat(4, 1fr); }
 
     /* topbar / header */
     .topbar{
@@ -90,33 +78,22 @@
       border-bottom: 3px solid var(--blue);
     }
 
-    .topbar .status{ font-size:0.75rem; text-transform:uppercase; color:var(--card); opacity:0.95; display:flex; align-items:center; gap:8px; }
+    .status{ font-size:0.75rem; text-transform:uppercase; color:var(--card); opacity:0.95; display:flex; align-items:center; gap:8px; }
     .blink{ width:10px; height:10px; border-radius:50%; background:var(--blue2); box-shadow:0 0 8px var(--blue2); animation:blink 1.6s infinite; }
     @keyframes blink{ 0%, 30%{ opacity:1; transform:scale(1);} 60%{ opacity:0.25; transform:scale(0.85);} 100%{ opacity:1; } }
 
-    .brand{
-      display:flex; align-items:center; gap:12px; margin-right:auto;
-    }
-
-    .brand-mark{
-      width:44px; height:44px; display:grid; place-items:center; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #fff8e9, #dfe8f2 8%, var(--blue) 70%);
-      color: white; font-weight:800; box-shadow: inset 0 -6px 12px rgba(0,0,0,0.12), 0 2px 0 rgba(0,0,0,0.08);
-      font-family:var(--pixel); font-size:1rem;
-    }
-
+    .brand{ display:flex; align-items:center; gap:12px; margin-right:auto; }
+    .brand-mark{ width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff8e9, #dfe8f2 8%, var(--blue) 70%); color: white; font-weight:800; box-shadow: inset 0 -6px 12px rgba(0,0,0,0.12), 0 2px 0 rgba(0,0,0,0.08); font-family:var(--pixel); font-size:1rem; }
     .brand .title{ font-weight:800; letter-spacing:0.02em; color:var(--ink); }
     .brand small{ display:block; font-size:0.78rem; color:var(--muted); font-weight:600; margin-top:2px; }
 
-    /* nav / toolbar */
     .navlinks{ display:flex; gap:12px; align-items:center; }
     .navlinks a{ color:var(--muted); text-decoration:none; font-weight:600; padding:6px 8px; border-radius:8px; transition:color .18s, transform .12s; }
     .navlinks a:hover{ color:var(--blue); transform:translateY(-2px); }
 
     .toolbar{ display:flex; gap:10px; align-items:center; }
 
-    /* Buttons and controls */
-    .control{ display:inline-flex; align-items:center; justify-content:center; width:var(--control-size); height:var(--control-size); min-width:var(--control-size); border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; }
+    .control{ display:inline-flex; align-items:center; justify-content:center; width:var(--control-size); height:var(--control-size); min-width:var(--control-size); border-radius:8px; border:1px solid var(--line); background:var(--card); cursor:pointer; }
     .control:active{ transform:translateY(1px); }
 
     .mode-toggle{ min-width:var(--mode-toggle-min); padding:8px 12px; display:inline-flex; gap:8px; align-items:center; justify-content:center; }
@@ -124,7 +101,6 @@
     .btn{ padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-weight:700; cursor:pointer; }
     .btn.primary{ background:var(--blue); color:white; border-color:transparent; }
 
-    /* Cards and surfaces */
     .card{ background:var(--card); border:1px solid var(--line); padding:20px; border-radius:12px; }
 
     /* Map / board */
@@ -134,7 +110,19 @@
 
     .board-wrap{ width: min(74vmin, 700px); aspect-ratio:1/1; margin:0 auto; }
     .board{ display:grid; grid-template-columns: repeat(8,1fr); width:100%; height:100%; border-radius:10px; overflow:hidden; border:6px solid rgba(255,255,255,0.04); }
-    .square{ display:grid; place-items:center; font-size:clamp(2rem, 3.4vw, 3.4rem); cursor:pointer; }
+
+    .square{ position:relative; display:grid; place-items:center; font-size:clamp(1.6rem, 3.4vw, 2.4rem); cursor:pointer; user-select:none; }
+    .square.dark{ background: var(--dark-square); }
+    .square:not(.dark){ background: var(--light-square); }
+
+    .square.selected{ outline: 4px solid rgba(83,142,213,0.9); outline-offset: -2px; }
+    .square.legal{ box-shadow: inset 0 0 0 4px rgba(255,255,255,0.06), 0 0 10px rgba(53,111,186,0.14); }
+
+    .piece{ pointer-events:none; font-size:1.8em; line-height:1; }
+
+    .coord{ position:absolute; font-size:0.62rem; color:rgba(0,0,0,0.6); opacity:0.9; }
+    .coord.file{ left:6px; bottom:6px; }
+    .coord.rank{ right:6px; top:6px; }
 
     /* map controls */
     .map-controls{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
@@ -144,11 +132,6 @@
     h1{ margin:0; font-size:clamp(1.6rem, 3.8vw, 2.8rem); color:var(--ink); }
     h2{ margin:0; font-size:clamp(1.15rem, 2.2vw, 1.6rem); }
     .eyebrow{ font-family:var(--pixel); font-weight:700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--blue); }
-
-    /* ticker */
-    .ticker{ overflow:hidden; position:relative; background:transparent; padding:6px 10px; border-radius:8px; }
-    .ticker-track{ display:inline-block; white-space:nowrap; animation:scroll 34s linear infinite; }
-    @keyframes scroll{ 0%{ transform:translateX(0%);} 100%{ transform:translateX(-100%);} }
 
     /* panels */
     .panel{ background:transparent; border-radius:10px; overflow:hidden; }
@@ -162,8 +145,10 @@
     .move-list li{ background:var(--card); border:1px solid var(--line); padding:8px; border-radius:8px; display:flex; gap:10px; align-items:center; }
     .move-list .num{ color:var(--muted); font-weight:800; }
 
-    /* map-card special look matching spec */
-    .map-card .map-inner{ background: linear-gradient(180deg, rgba(10,12,16,0.85), rgba(4,6,10,0.95)); border-radius:8px; padding:12px; }
+    /* promo modal */
+    .promo-modal{ display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); }
+    .promo-modal.visible{ display:flex; }
+    .promo-card{ background:var(--card); padding:16px; border-radius:10px; }
 
     /* responsive */
     @media (max-width:900px){ .main{ grid-template-columns:1fr; } .board-wrap{ width: min(88vw, 600px); } }
@@ -288,12 +273,6 @@
         return Array(64).fill(null);
       }
 
-      function indexToSquare(index) {
-        const row = Math.floor(index / 8);
-        const col = index % 8;
-        return { row, col, index };
-      }
-
       function toIndex(row, col) {
         return row * 8 + col;
       }
@@ -307,9 +286,9 @@
       function parseFEN(fen) {
         const parts = fen.trim().split(/\s+/);
         const boardPart = parts[0];
-        const turn = parts[1];
-        const castling = parts[2];
-        const ep = parts[3];
+        const turn = parts[1] || 'w';
+        const castling = parts[2] || '-';
+        const ep = parts[3] || '-';
         const halfmove = Number(parts[4] || 0);
         const fullmove = Number(parts[5] || 1);
 
@@ -347,132 +326,6 @@
         };
       }
 
-      function cloneState(stateObj) {
-        return {
-          board: stateObj.board.slice(),
-          turn: stateObj.turn,
-          castling: { ...stateObj.castling },
-          enPassant: stateObj.enPassant,
-          halfmove: stateObj.halfmove,
-          fullmove: stateObj.fullmove,
-          moveHistory: stateObj.moveHistory.slice(),
-          positionHistory: stateObj.positionHistory.slice(),
-          lastMove: stateObj.lastMove ? { ...stateObj.lastMove } : null,
-          winner: stateObj.winner
-        };
-      }
-
-      function initialState() {
-        const s = parseFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
-        s.positionHistory = [boardHash(s.board)];
-        return s;
-      }
-
-      function squareName(index) {
-        const { row, col } = toCoord(index);
-        return `${FILES[col]}${8 - row}`;
-      }
-
-      function squareToIndex(square) {
-        const file = FILES.indexOf(square[0]);
-        const rank = Number(square[1]);
-        const row = 8 - rank;
-        return toIndex(row, file);
-      }
-
-      function squareFromIndex(index) {
-        const { row, col } = toCoord(index);
-        return `${FILES[col]}${8 - row}`;
-      }
-
-      function pieceValue(piece) {
-        const vals = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
-        return vals[piece.type] || 0;
-      }
-
-      function opponent(color) {
-        return color === 'w' ? 'b' : 'w';
-      }
-
-      function getPiece(state, index) {
-        return state.board[index];
-      }
-
-      function setPiece(state, index, piece) {
-        state.board[index] = piece;
-      }
-
-      function isInside(row, col) {
-        return row >= 0 && row < 8 && col >= 0 && col < 8;
-      }
-
-      function squareIsAttacked(state, row, col, byColor) {
-        const pawnDir = byColor === 'w' ? -1 : 1;
-        const pawnRow = row - pawnDir;
-        const pawnCols = [col - 1, col + 1];
-        for (const c of pawnCols) {
-          if (isInside(pawnRow, c)) {
-            const idx = toIndex(pawnRow, c);
-            const piece = getPiece(state, idx);
-            if (piece && piece.color === byColor && piece.type === 'p') return true;
-          }
-        }
-
-        const knightOffsets = [
-          [-2,-1], [-2,1], [-1,-2], [-1,2],
-          [1,-2], [1,2], [2,-1], [2,1]
-        ];
-        for (const [dr, dc] of knightOffsets) {
-          const rr = row + dr;
-          const cc = col + dc;
-          if (isInside(rr, cc)) {
-            const idx = toIndex(rr, cc);
-            const piece = getPiece(state, idx);
-            if (piece && piece.color === byColor && piece.type === 'n') return true;
-          }
-        }
-
-        const dirs = [
-          [1,0],[-1,0],[0,1],[0,-1],
-          [1,1],[1,-1],[-1,1],[-1,-1]
-        ];
-        for (const [dr, dc] of dirs) {
-          let rr = row + dr;
-          let cc = col + dc;
-          while (isInside(rr, cc)) {
-            const idx = toIndex(rr, cc);
-            const piece = getPiece(state, idx);
-            if (piece) {
-              if (piece.color === byColor) {
-                if ((dr === 1 || dr === -1) && (dc === 1 || dc === -1) && (piece.type === 'b' || piece.type === 'q')) return true;
-                if ((dr === 0 || dc === 0) && (piece.type === 'r' || piece.type === 'q')) return true;
-                if (Math.abs(dr) === 1 && Math.abs(dc) === 1 && piece.type === 'b') return true;
-                if (piece.type === 'k' && Math.abs(dr) <= 1 && Math.abs(dc) <= 1) return true;
-              }
-              break;
-            }
-            rr += dr; cc += dc;
-          }
-        }
-
-        return false;
-      }
-
-      function kingIndex(state, color) {
-        for (let i = 0; i < state.board.length; i++) {
-          const piece = state.board[i];
-          if (piece && piece.color === color && piece.type === 'k') return i;
-        }
-        return -1;
-      }
-
-      function inCheck(state, color) {
-        const kingPos = kingIndex(state, color);
-        if (kingPos < 0) return false;
-        const { row, col } = toCoord(kingPos);
-        return squareIsAttacked(state, row, col, opponent(color));
-      }
-
       function boardHash(board) {
         let str = '';
         for (let i = 0; i < board.length; i++) {
@@ -486,230 +339,93 @@
         return str;
       }
 
-      function isDrawByPosition(state) {
-        const posCount = (state.positionHistory || []).filter(h => h === boardHash(state.board)).length;
-        if (posCount >= 3) return 'Threefold repetition';
-
-        if (state.halfmove >= 100) return 'Fifty-move rule';
-
-        const pieces = state.board.filter(Boolean);
-        if (!pieces.length) return 'Insufficient material'; // impossible but explicit
-
-        const pieceTypes = pieces.map(p => p.type);
-        const whitePieces = pieces.filter(p => p.color === 'w').map(p => p.type);
-        const blackPieces = pieces.filter(p => p.color === 'b').map(p => p.type);
-
-        const hasPawns = pieceTypes.includes('p');
-        const hasRooks = pieceTypes.includes('r');
-        const hasQueens = pieceTypes.includes('q');
-        const hasBishops = pieceTypes.includes('b');
-        const hasKnights = pieceTypes.includes('n');
-        if (!hasPawns && !hasRooks && !hasQueens && !hasBishops && !hasKnights) return 'Insufficient material';
-
-        if (!hasPawns && !hasRooks && !hasQueens && !hasBishops && !hasKnights) {
-          return 'Insufficient material';
-        }
-
-        if (!hasPawns && !hasRooks && !hasQueens) {
-          const w = whitePieces.filter(Boolean);
-          const b = blackPieces.filter(Boolean);
-
-          if (w.length === 1 && b.length === 1) {
-            // K vs K
-            return 'Insufficient material';
-          }
-
-          if (w.length === 1 && b.length === 2 && w[0] === 'k' && b.every(p => ['b', 'n'].includes(p))) {
-            return 'Insufficient material';
-          }
-
-          if (w.length === 2 && b.length === 1 && b[0] === 'k' && w.every(p => ['b', 'n'].includes(p))) {
-            return 'Insufficient material';
-          }
-
-          if (w.length === 1 && b.length === 1 && (w[0] === 'b' || w[0] === 'n') && (b[0] === 'b' || b[0] === 'n')) {
-            return 'Insufficient material';
-          }
-        }
-
-        return null;
+      function initialState() {
+        const s = parseFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+        s.positionHistory = [boardHash(s.board)];
+        return s;
       }
 
+      function squareName(index) {
+        const { row, col } = toCoord(index);
+        return `${FILES[col]}${8 - row}`;
+      }
+
+      function squareFromIndex(index) {
+        const { row, col } = toCoord(index);
+        return `${FILES[col]}${8 - row}`;
+      }
+
+      function getPiece(state, index) {
+        return state.board[index];
+      }
+
+      function setPiece(state, index, piece) {
+        state.board[index] = piece;
+      }
+
+      function opponent(color) { return color === 'w' ? 'b' : 'w'; }
+
+      function isInside(row, col) { return row >= 0 && row < 8 && col >= 0 && col < 8; }
+
       function generatePseudoMoves(state, color) {
+        // simplified pseudo-legal move generator used for highlighting only
         const moves = [];
         for (let i = 0; i < state.board.length; i++) {
           const piece = state.board[i];
           if (!piece || piece.color !== color) continue;
-
           const { row, col } = toCoord(i);
-
           if (piece.type === 'p') {
             const stepDir = color === 'w' ? -1 : 1;
-            const startRow = color === 'w' ? 6 : 1;
-            const oneStep = row + stepDir;
-            const oneIndex = isInside(oneStep, col) ? toIndex(oneStep, col) : null;
-            if (oneIndex !== null) {
-              if (!state.board[oneIndex]) {
-                moves.push({
-                  from: i,
-                  to: oneIndex,
-                  piece: piece.type,
-                  color,
-                  promotion: oneStep === 0 || oneStep === 7 ? 'q' : null
-                });
-                const twoRow = row + stepDir * 2;
-                if (row === startRow) {
-                  const twoIndex = isInside(twoRow, col) ? toIndex(twoRow, col) : null;
-                  if (twoIndex !== null && !state.board[twoIndex]) {
-                    moves.push({ from: i, to: twoIndex, piece: piece.type, color, double: true });
-                  }
-                }
-              }
-            }
-
-            for (const dc of [-1, 1]) {
-              const rr = row + stepDir;
-              const cc = col + dc;
+            const oneRow = row + stepDir;
+            if (isInside(oneRow, col) && !state.board[toIndex(oneRow, col)]) moves.push({ from: i, to: toIndex(oneRow, col) });
+            // captures
+            for (const dc of [-1,1]) {
+              const rr = row + stepDir, cc = col + dc;
               if (isInside(rr, cc)) {
-                const target = toIndex(rr, cc);
-                const targetPiece = state.board[target];
-                if (targetPiece && targetPiece.color !== color) {
-                  moves.push({
-                    from: i,
-                    to: target,
-                    piece: piece.type,
-                    color,
-                    capture: true,
-                    promotion: rr === 0 || rr === 7 ? 'q' : null
-                  });
-                }
-
-                if (state.enPassant && state.enPassant === squareFromIndex(target)) {
-                  const enPassantRow = color === 'w' ? 2 : 5;
-                  const captureRow = color === 'w' ? 3 : 4;
-                  const capturedPawnIndex = toIndex(captureRow, cc);
-                  const pawn = state.board[capturedPawnIndex];
-                  if (pawn && pawn.type === 'p' && pawn.color !== color) {
-                    moves.push({
-                      from: i,
-                      to: target,
-                      piece: piece.type,
-                      color,
-                      capture: true,
-                      enPassant: true,
-                      captureIndex: capturedPawnIndex
-                    });
-                  }
-                }
-              }
-            }
-          }
-
-          if (piece.type === 'n') {
-            const offsets = [
-              [-2, -1], [-2, 1], [-1, -2], [-1, 2],
-              [1, -2], [1, 2], [2, -1], [2, 1]
-            ];
-            for (const [dr, dc] of offsets) {
-              const rr = row + dr;
-              const cc = col + dc;
-              if (!isInside(rr, cc)) continue;
-              const idx = toIndex(rr, cc);
-              const targetPiece = state.board[idx];
-              if (!targetPiece || targetPiece.color !== color) {
-                moves.push({ from: i, to: idx, piece: piece.type, color, capture: !!targetPiece });
-              }
-            }
-          }
-
-          if (piece.type === 'b' || piece.type === 'r' || piece.type === 'q') {
-            const directions = [];
-            if (piece.type === 'b' || piece.type === 'q') {
-              directions.push([1,1],[1,-1],[-1,1],[-1,-1]);
-            }
-            if (piece.type === 'r' || piece.type === 'q') {
-              directions.push([1,0],[-1,0],[0,1],[0,-1]);
-            }
-            for (const [dr, dc] of directions) {
-              let rr = row + dr;
-              let cc = col + dc;
-              while (isInside(rr, cc)) {
                 const idx = toIndex(rr, cc);
-                const targetPiece = state.board[idx];
-                if (!targetPiece) {
-                  moves.push({ from: i, to: idx, piece: piece.type, color });
-                } else {
-                  if (targetPiece.color !== color) {
-                    moves.push({ from: i, to: idx, piece: piece.type, color, capture: true });
-                  }
-                  break;
-                }
-                rr += dr;
-                cc += dc;
+                const tp = state.board[idx];
+                if (tp && tp.color !== color) moves.push({ from:i, to: idx });
               }
             }
           }
-
-          if (piece.type === 'k') {
-            const directions = [
-              [1,0],[-1,0],[0,1],[0,-1],
-              [1,1],[1,-1],[-1,1],[-1,-1]
-            ];
-            for (const [dr, dc] of directions) {
-              const rr = row + dr;
-              const cc = col + dc;
-              if (!isInside(rr, cc)) continue;
-              const idx = toIndex(rr, cc);
-              const targetPiece = state.board[idx];
-              if (!targetPiece || targetPiece.color !== color) {
-                moves.push({ from: i, to: idx, piece: piece.type, color, capture: !!targetPiece });
+          if (piece.type === 'n') {
+            const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+            for (const [dr,dc] of offs) {
+              const rr = row+dr, cc = col+dc;
+              if (!isInside(rr,cc)) continue;
+              const idx = toIndex(rr,cc); const tp = state.board[idx];
+              if (!tp || tp.color !== color) moves.push({ from:i, to:idx });
+            }
+          }
+          if (['b','r','q'].includes(piece.type)) {
+            const dirs = [];
+            if (piece.type === 'b' || piece.type === 'q') dirs.push([1,1],[1,-1],[-1,1],[-1,-1]);
+            if (piece.type === 'r' || piece.type === 'q') dirs.push([1,0],[-1,0],[0,1],[0,-1]);
+            for (const [dr,dc] of dirs) {
+              let rr = row+dr, cc = col+dc;
+              while (isInside(rr,cc)) {
+                const idx = toIndex(rr,cc); const tp = state.board[idx];
+                if (!tp) moves.push({ from:i, to:idx }); else { if (tp.color !== color) moves.push({ from:i, to:idx }); break; }
+                rr+=dr; cc+=dc;
               }
             }
-
-            const rowToCastle = color === 'w' ? 7 : 0;
-            const kingIndex = toIndex(rowToCastle, 4);
-            if (i === kingIndex) {
-              const rights = state.castling;
-              if (color === 'w' && rights.wK && !state.board[toIndex(7,5)] && !state.board[toIndex(7,6)] &&
-                  !inCheck(state, 'w') &&
-                  !squareIsAttacked(state, 7, 4, 'b') &&
-                  !squareIsAttacked(state, 7, 5, 'b') &&
-                  !squareIsAttacked(state, 7, 6, 'b')) {
-                moves.push({ from: kingIndex, to: toIndex(7, 6), piece: 'k', color, castle: 'K' });
-              }
-              if (color === 'w' && rights.wQ && !state.board[toIndex(7,1)] && !state.board[toIndex(7,2)] && !state.board[toIndex(7,3)] &&
-                  !inCheck(state, 'w') &&
-                  !squareIsAttacked(state, 7, 4, 'b') &&
-                  !squareIsAttacked(state, 7, 3, 'b') &&
-                  !squareIsAttacked(state, 7, 2, 'b')) {
-                moves.push({ from: kingIndex, to: toIndex(7, 2), piece: 'k', color, castle: 'Q' });
-              }
-              if (color === 'b' && rights.bK && !state.board[toIndex(0,5)] && !state.board[toIndex(0,6)] &&
-                  !inCheck(state, 'b') &&
-                  !squareIsAttacked(state, 0, 4, 'w') &&
-                  !squareIsAttacked(state, 0, 5, 'w') &&
-                  !squareIsAttacked(state, 0, 6, 'w')) {
-                moves.push({ from: kingIndex, to: toIndex(0, 6), piece: 'k', color, castle: 'k' });
-              }
-              if (color === 'b' && rights.bQ && !state.board[toIndex(0,1)] && !state.board[toIndex(0,2)] && !state.board[toIndex(0,3)] &&
-                  !inCheck(state, 'b') &&
-                  !squareIsAttacked(state, 0, 4, 'w') &&
-                  !squareIsAttacked(state, 0, 3, 'w') &&
-                  !squareIsAttacked(state, 0, 2, 'w')) {
-                moves.push({ from: kingIndex, to: toIndex(0, 2), piece: 'k', color, castle: 'q' });
-              }
+          }
+          if (piece.type === 'k') {
+            const dirs = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+            for (const [dr,dc] of dirs) {
+              const rr=row+dr, cc=col+dc; if (!isInside(rr,cc)) continue;
+              const idx = toIndex(rr,cc); const tp = state.board[idx]; if (!tp || tp.color !== color) moves.push({from:i,to:idx});
             }
           }
         }
         return moves;
       }
 
-      /* --- Rest of original game logic continues unchanged --- */
-
       // render board and pieces
       function render() {
         boardEl.innerHTML = '';
-        for (let i = 0; i < 64; i++) {
+        const indices = flipBoard ? Array.from({length:64}, (_,i) => 63 - i) : Array.from({length:64}, (_,i) => i);
+        for (const i of indices) {
           const sq = document.createElement('div');
           sq.className = 'square';
           const { row, col } = toCoord(i);
@@ -752,14 +468,16 @@
           li.innerHTML = `<span class="num">${i+1}.</span> <span class="move">${state.moveHistory[i]}</span>`;
           moveListEl.appendChild(li);
         }
+
+        highlight();
       }
 
       function onSquareClick(e) {
         const idx = Number(e.currentTarget.dataset.index);
-        // selection/move handling (original logic preserved)
+        // selection/move handling
         if (selectedSquare === null) {
           const p = getPiece(state, idx);
-          if (p && p.color === (state.turn === 'w' ? 'w' : 'b')) {
+          if (p && p.color === state.turn) {
             selectedSquare = idx;
             legalMoves = generatePseudoMoves(state, p.color).filter(m => m.from === idx).map(m => m.to);
             highlight();
@@ -768,16 +486,33 @@
         }
 
         // attempt move
-        const move = { from: selectedSquare, to: idx };
-        // very simple move applicator (for demo) — real rules are complex, but keep existing behaviour
-        const piece = getPiece(state, selectedSquare);
+        const moveFrom = selectedSquare;
+        const moveTo = idx;
+        const piece = getPiece(state, moveFrom);
         if (piece) {
-          setPiece(state, idx, piece);
-          setPiece(state, selectedSquare, null);
-          state.moveHistory.push(`${squareFromIndex(move.from)}-${squareFromIndex(move.to)}`);
+          // basic legality: ensure destination is either empty or opponent piece
+          const dest = getPiece(state, moveTo);
+          if (dest && dest.color === piece.color) {
+            // selecting another own piece
+            selectedSquare = moveTo;
+            legalMoves = generatePseudoMoves(state, piece.color).filter(m => m.from === moveTo).map(m => m.to);
+            highlight();
+            return;
+          }
+
+          // perform move (very simple, not complete chess rules)
+          setPiece(state, moveTo, piece);
+          setPiece(state, moveFrom, null);
+          state.moveHistory.push(`${squareFromIndex(moveFrom)}-${squareFromIndex(moveTo)}`);
+
+          // halfmove/fullmove bookkeeping (simple)
+          if (piece.type === 'p' || (dest && dest.type)) state.halfmove = 0; else state.halfmove = (state.halfmove || 0) + 1;
+          if (state.turn === 'b') state.fullmove = (state.fullmove || 1) + 1;
+
           state.turn = opponent(state.turn);
           state.positionHistory.push(boardHash(state.board));
           selectedSquare = null;
+          legalMoves = [];
           render();
         }
       }
@@ -795,11 +530,14 @@
         }
       }
 
-      newGameBtn.addEventListener('click', () => { state = initialState(); render(); });
-      flipBtn.addEventListener('click', () => { flipBoard = !flipBoard; boardEl.style.direction = flipBoard ? 'rtl' : 'ltr'; });
-      exportBtn.addEventListener('click', () => { const pgn = state.moveHistory.join(' '); navigator.clipboard && navigator.clipboard.writeText(pgn); alert('PGN copied to clipboard:\n' + pgn); });
+      newGameBtn.addEventListener('click', () => { state = initialState(); selectedSquare = null; legalMoves = []; render(); });
+      flipBtn.addEventListener('click', () => { flipBoard = !flipBoard; render(); });
+      exportBtn.addEventListener('click', () => {
+        const pgn = state.moveHistory.join(' ');
+        if (navigator.clipboard) navigator.clipboard.writeText(pgn).catch(()=>{});
+        alert('PGN copied to clipboard:\n' + (pgn || '(empty)'));
+      });
 
-      // promo handling (kept minimal)
       promoButtons.forEach(b => b.addEventListener('click', (ev) => { promoModal.classList.remove('visible'); }));
 
       // init
